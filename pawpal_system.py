@@ -42,11 +42,9 @@ class Owner:
 
 
 class Scheduler:
-    def generate_plan(self, pet: Pet, time_budget: int) -> list[Task]:
+    def generate_plan(self, pet: Pet, time_budget: int) -> list[dict]:
+        # returns [{"task": Task, "start_time": "08:00", "reason": "..."}]
         pass
 
-    def generate_all_plans(self, owner: Owner) -> dict[str, list[Task]]:
-        pass
-
-    def explain_plan(self, pet: Pet) -> str:
+    def generate_all_plans(self, owner: Owner) -> dict[str, list[dict]]:
         pass
