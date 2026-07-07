@@ -7,10 +7,16 @@
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
 
+My initial design had four classes: Owner, Pet, Task, and Scheduler. Owner holds the user's name, their pets, available time, and preferences, with an add_pet() method. Pet holds a name, species, and its list of tasks, with add_task() to attach new ones. Task represents a single care activity — description, type, priority, duration, and completion status — with mark_complete() to update it. Scheduler was originally designed to take an Owner and generate one combined daily plan across all their pets, along with a separate method to explain why it made the choices it did.
+
 **b. Design changes**
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
+
+My design did change in the fact that upon implementing Scheduler.generate_plan() to return a combined single plan for the owner and all their pets, I realized that could be revised better to have different plans for each unique pet, since care needs are different among different breeds and pets. So I decided to split the plan for the owner into smaller pieces with an equal amount of time set for each pet they own. I changed Scheduler to build one plan per pet instead. generate_plan(pet, time_budget) for a single pet, plus generate_all_plans(owner) as a wrapper that loops through all of the owner's pets. I also added a breed field to Pet, since breed differences are the actual reason per-pet plans matter. I made breed optional because not every species in the app has a meaningful breed, so it just defaults to None instead of having to be required.
+
+When I reviewed the skeleton with AI there were two gaps. Task had no field for when a task happens, even though the required sample output format shows timestamps, and generate_plan() / explain_plan() were separate methods with no shared state that connects them. So I collapsed both into generate_plan() returning a list of dicts (task, start_time, and reason together) instead of a bare list of Task objects, since that keeps the plan and its explanation from  getting out of sync.
 
 ---
 
