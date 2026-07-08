@@ -114,3 +114,42 @@ Describe your app in numbered steps so a reader can follow along without watchin
 5. <!-- Add more steps as needed -->
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
+
+
+## Testing PawPal+
+
+**Coverage:**
+- Core class behavior: task completion, pet task-count tracking
+- Sorting: chronological ordering by `due_time`, including tasks with no `due_time` set
+- Recurrence: completing a "daily" task correctly spawns a next-day occurrence; completing a non-recurring task correctly does *not*
+- Conflict detection: duplicate `due_time` across different pets is flagged; non-overlapping times produce no false positives
+- Filtering: by pet name and by completion status, independently
+- Edge case: a pet with zero tasks produces an empty plan instead of erroring
+
+Output:
+(base) dman3100@Dawits-MacBook-Pro ai110-module2show-pawpal-starter % grep -c "^def test_" tests/test_pawpal.py
+
+11
+(base) dman3100@Dawits-MacBook-Pro ai110-module2show-pawpal-starter % python -m pytest -v
+============================= test session starts ==============================
+platform darwin -- Python 3.13.5, pytest-8.3.4, pluggy-1.5.0 -- /opt/anaconda3/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/dman3100/ai110-module2show-pawpal-starter
+plugins: anyio-4.7.0
+collected 11 items                                                             
+
+tests/test_pawpal.py::test_mark_complete_changes_status PASSED           [  9%]
+tests/test_pawpal.py::test_add_task_increases_pet_task_count PASSED      [ 18%]
+tests/test_pawpal.py::test_sort_by_time_orders_chronologically PASSED    [ 27%]
+tests/test_pawpal.py::test_sort_by_time_places_tasks_without_due_time_last PASSED [ 36%]
+tests/test_pawpal.py::test_completing_daily_task_creates_next_day_occurrence PASSED [ 45%]
+tests/test_pawpal.py::test_completing_non_recurring_task_creates_no_new_task PASSED [ 54%]
+tests/test_pawpal.py::test_detect_conflicts_flags_duplicate_times_across_pets PASSED [ 63%]
+tests/test_pawpal.py::test_detect_conflicts_returns_empty_when_no_overlap PASSED [ 72%]
+tests/test_pawpal.py::test_filter_tasks_by_pet_name PASSED               [ 81%]
+tests/test_pawpal.py::test_filter_tasks_by_completion_status PASSED      [ 90%]
+tests/test_pawpal.py::test_generate_plan_with_no_tasks_returns_empty_list PASSED [100%]
+
+============================== 11 passed in 0.02s ==============================
+
+**Confidence Level:** ⭐⭐⭐☆☆ (3/5)
