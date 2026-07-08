@@ -66,42 +66,14 @@ Time available: 90 min (split evenly across 2 pets)
 
 Note: Rex's third task ("Brushing," 20 min, priority 2) is intentionally not scheduled — after the walk and breakfast, only 5 of his 45-minute budget remain, which isn't enough for a 20-minute task. This demonstrates the scheduler's priority-based tradeoff: lower-priority tasks are dropped when time runs out rather than force-fit or overlapping with higher-priority ones.
 
-## 🧪 Testing PawPal+
-
-```bash
-# Run the full test suite:
-pytest
-
-# Run with coverage:
-pytest --cov
-```
-
-Sample test output:
-
-```
-============================= test session starts ==============================
-platform darwin -- Python 3.13.5, pytest-8.3.4, pluggy-1.5.0 -- /opt/anaconda3/bin/python3
-cachedir: .pytest_cache
-rootdir: /Users/dman3100/ai110-module2show-pawpal-starter
-plugins: anyio-4.7.0
-collected 2 items
-
-tests/test_pawpal.py::test_mark_complete_changes_status PASSED           [ 50%]
-tests/test_pawpal.py::test_add_task_increases_pet_task_count PASSED      [100%]
-
-============================== 2 passed in 0.03s ===============================
-```
-
 ## 📐 Smarter Scheduling
-
-> Fill in once you've implemented scheduling logic.
 
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Task sorting | `Scheduler.sort_by_time()` | Sorts tasks by `due_time` ("HH:MM"), earliest first; tasks with no due_time sort last. |
+| Filtering | `Scheduler.filter_tasks()` | Filters across all of an owner's pets by pet name and/or completion status. |
+| Conflict handling | `Scheduler.detect_conflicts()` | Flags tasks (same pet or different pets) sharing an identical due_time; returns warning strings instead of crashing. Exact-match only, not overlap-aware (see reflection.md 2b). |
+| Recurring tasks | `Task.next_occurrence()` + `Scheduler.complete_task()` | On completing a "daily"/"weekly" task, automatically creates and attaches the next occurrence with `due_date` advanced via `timedelta`. |
 
 ## 📸 Demo Walkthrough
 
