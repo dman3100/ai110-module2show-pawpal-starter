@@ -22,6 +22,14 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Features
+
+- Per-pet daily scheduling: Scheduler.generate_plan() greedily selects tasks by priority (higher = more urgent), breaking ties by shorter duration first, and skips any task that would overflow the remaining time budget.
+- Sorting by time: Scheduler.sort_by_time() orders tasks chronologically by due_time; tasks with no due_time sort last rather than crashing the sort.
+- Filtering: Scheduler.filter_tasks() filters across every pet an owner has, by pet name and/or completion status.
+- Conflict warnings: Scheduler.detect_conflicts() flags two or more tasks (same pet or different pets) sharing an identical due_time, surfaced live in the UI. Exact-match only, not overlap-aware (see reflection.md 2b).
+- Daily/weekly recurrence: Task.next_occurrence() + Scheduler.complete_task() automatically spawn the next occurrence of a recurring task when marked complete, advancing due_date via timedelta.
+
 ## Getting started
 
 ### Setup
@@ -75,18 +83,57 @@ Note: Rex's third task ("Brushing," 20 min, priority 2) is intentionally not sch
 | Conflict handling | `Scheduler.detect_conflicts()` | Flags tasks (same pet or different pets) sharing an identical due_time; returns warning strings instead of crashing. Exact-match only, not overlap-aware (see reflection.md 2b). |
 | Recurring tasks | `Task.next_occurrence()` + `Scheduler.complete_task()` | On completing a "daily"/"weekly" task, automatically creates and attaches the next occurrence with `due_date` advanced via `timedelta`. |
 
-## 📸 Demo Walkthrough
+## Demo Walkthrough
 
-Describe your app in numbered steps so a reader can follow along without watching a video:
+Main UI features: enter owner name and daily time budget; enter a pet's name and species; add tasks with a title, type, duration, priority, and due time; view the current task list sorted chronologically; see live conflict warnings if two tasks share a due time; generate a daily schedule that shows what's scheduled (with start time and reasoning) and what got excluded for lack of time.
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+Example workflow:
+1. Enter owner name ("Dawit") and time available (90 min).
+2. Add a pet ("Rocky", species "dog").
+3. Add several tasks with different priorities, durations, and due times, e.g. a high-priority feeding, a medium-priority walk, a low-priority vet visit.
+4. If two tasks share a due time, a warning appears immediately above the task table.
+5. Click "Generate schedule" to see the ordered plan, each entry's start time and reasoning, and a separate list of any tasks that didn't fit the time budget.
 
-**Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
+Key Scheduler behaviors demonstrated: priority-based ordering with tie-breaking by duration, time-budget-aware exclusion (with excluded tasks explicitly surfaced instead of silently dropped), and live conflict detection across a pet's own tasks.
 
+Sample CLI output from python3 main.py, showing scheduling, sorting, filtering, conflict detection, and recurring-task automation:
+
+```
+===== Today's Schedule for Dawit =====
+Time available: 90 min (split evenly across 2 pets)
+
+--- Rex ---
+  [08:00] Evening meds (5 min, priority 5)
+      -> Priority 5 meds task (5 min) fits in the 45 min remaining for Rex.
+  [08:05] Morning walk (30 min, priority 5)
+      -> Priority 5 walk task (30 min) fits in the 40 min remaining for Rex.
+  [08:35] Breakfast (10 min, priority 4)
+      -> Priority 4 feeding task (10 min) fits in the 10 min remaining for Rex.
+
+--- Luna ---
+  [08:00] Wet food feeding (10 min, priority 5)
+      -> Priority 5 feeding task (10 min) fits in the 45 min remaining for Luna.
+  [08:10] Laser pointer playtime (15 min, priority 3)
+      -> Priority 3 enrichment task (15 min) fits in the 35 min remaining for Luna.
+
+===== Sorting: Rex's tasks by due_time (added out of order) =====
+
+--- Rex's tasks, sorted by due_time ---
+  [08:00] Morning walk (priority 5, completed=False)
+  [08:30] Breakfast (priority 4, completed=False)
+  [09:00] Brushing (priority 2, completed=False)
+  [20:00] Evening meds (priority 5, completed=False)
+
+===== Conflict Detection =====
+
+  ⚠ Conflict at 08:00: Rex's 'Morning walk', Luna's 'Wet food feeding' are all scheduled at the same time.
+
+===== Recurring Tasks =====
+
+Completing 'Evening meds' (due 2026-07-07, frequency=daily)...
+  -> New occurrence auto-created: due 2026-07-08 at 20:00, completed=False
+Rex now has 5 tasks (was 4 before completion).
+```
 
 ## Testing PawPal+
 

@@ -1,0 +1,39 @@
+classDiagram
+    class Owner {
+        +string name
+        +list~Pet~ pets
+        +int time_available
+        +dict preferences
+        +add_pet(pet)
+    }
+    class Pet {
+        +string name
+        +string species
+        +string breed?
+        +list~Task~ tasks
+        +add_task(task)
+    }
+    class Task {
+        +string description
+        +string task_type
+        +int priority
+        +int duration_min
+        +string due_date?
+        +string due_time?
+        +string frequency?
+        +bool completed
+        +mark_complete()
+        +next_occurrence() Task?
+    }
+    class Scheduler {
+        +generate_plan(pet, time_budget) list~dict~
+        +generate_all_plans(owner) dict
+        +sort_by_time(tasks) list~Task~
+        +filter_tasks(owner, pet_name?, completed?) list~Task~
+        +detect_conflicts(owner) list~string~
+        +complete_task(pet, task) Task?
+    }
+    Owner "1" --> "*" Pet : has
+    Pet "1" --> "*" Task : has
+    Scheduler ..> Owner : splits time_available across pets, scans across pets for conflicts
+    Scheduler ..> Pet : builds one plan per pet, appends recurring task instances
