@@ -32,6 +32,8 @@ When I reviewed the skeleton with AI there were two gaps. Task had no field for 
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
+When a task's duration goes over the remaining time budget, the scheduler correctly excludes it (I tested it with an 80-minute grooming task against a 70-minute remaining window) but the UI only displays the tasks that made the cut, with no explanation shown for why an excluded task didn't appear. I've taken this into account, and full compliance with the "explain the plan" requirement should include explaining exclusions, not just inclusions.
+
 ---
 
 ## 3. AI Collaboration
